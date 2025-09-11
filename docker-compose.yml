@@ -1,0 +1,36 @@
+version: '3.8' # Specifies the version of the Docker Compose file format
+
+services:
+  postgres:
+    image: postgres:15-alpine # Official PostgreSQL image, version 15. The 'alpine' tag is a lightweight version.
+    container_name: orderhub-postgres # A fixed, friendly name for our contain  er.
+    environment: # Environment variables to configure the database.
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=user_service_db
+    ports:
+      - "5433:5432" # Maps port 5432 of the container to port 5432 on your machine.
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Ensures data isn't lost if the container is recreated.
+
+  mongo:
+    image: mongo:6.0 # Official MongoDB image, version 6.0.
+    container_name: orderhub-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017" # Maps the default MongoDB port.
+    volumes:
+      - mongodata:/data/db # Persists the MongoDB data.
+
+  rabbitmq:
+    image: rabbitmq:3-management # We use the image with the web management interface.
+    container_name: orderhub-rabbitmq
+    ports:
+      - "5672:5672"   # Port for applications to connect (using AMQP protocol).
+      - "15672:15672" # Port for the web management UI.
+
+volumes: # We declare the named volumes here.
+  pgdata:
+  mongodata:
